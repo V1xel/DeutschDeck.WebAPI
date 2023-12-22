@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  deutsch_deck_webapi:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: deutsch_deck_webapi
+    working_dir: /app/src/service  # Adjust this path based on your project structure
+    ports:
+      - ${APP_PORT}:${APP_PORT}
