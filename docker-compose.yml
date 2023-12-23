@@ -10,5 +10,7 @@ services:
       - "${APP_PORT}:${APP_PORT}"
     volumes:
       - .:/app
+      - /app/obj
+      - /app/bin 
     env_file:
       - .env
