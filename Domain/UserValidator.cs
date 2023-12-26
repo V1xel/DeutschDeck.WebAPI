@@ -18,25 +18,17 @@ namespace DeutschDeck.WebAPI.Domain
         }
     }
 
-    public record SignupUserValidatedArgs(string name, string email, string password);
+    public record SignupValidatedArgs(string email);
 
     public class UserValidator
     {
-        public static SignupUserValidatedArgs SignupUserArgs(string name, string email, string password)
+        public static SignupValidatedArgs SignupArgs(string email)
         {
-            var nameValidator = new RegexValidator();
-            if (!nameValidator.IsValid(name))
-                throw new ValidationException("name", "has invalid format");
-
             var emailValidator = new EmailAddressAttribute();
             if (!emailValidator.IsValid(email))
                 throw new ValidationException("email", "has invalid format");
 
-            var passwordValidator = new RegexValidator();
-            if (!passwordValidator.IsValid(password))
-                throw new ValidationException("password", "has invalid format");
-
-            return new SignupUserValidatedArgs(name, email, password);
+            return new SignupValidatedArgs(email);
         }
     }
 }
