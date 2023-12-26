@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 
-namespace DeutschDeck.WebAPI
+namespace DeutschDeck.WebAPI.Graphql
 {
     public class DDSchema : Schema
     {
