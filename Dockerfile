@@ -6,4 +6,4 @@ RUN dotnet restore
 
 COPY . .
 
-CMD ["dotnet", "watch", "run", "--project" , "DeutschDeck.WebAPI.csproj", "--no-launch-profile"]
+CMD ["dotnet", "watch", "run", "--project" , "DeutschDeck.WebAPI.csproj", "--no-launch-profile", "--non-interactive"]
