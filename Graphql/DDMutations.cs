@@ -5,6 +5,14 @@ using GraphQL.Types;
 
 namespace DeutschDeck.WebAPI.Graphql
 {
+    public class DDQueries : ObjectGraphType
+    {
+        public DDQueries() 
+        {
+            Field<BooleanGraphType>("test").Resolve(c => true);
+        }
+    }
+
     public class DDMutations : ObjectGraphType
     {
         public const string EMAIL_FIELD_LITERAL = "email";

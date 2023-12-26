@@ -6,6 +6,8 @@ namespace DeutschDeck.WebAPI.Graphql
     {
         public DDSchema(IServiceProvider provider) : base(provider)
         {
+            Query = provider.GetService<DDQueries>();
+            Mutation = provider.GetService<DDMutations>();
         }
     }
 }

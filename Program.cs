@@ -1,4 +1,6 @@
 using DeutschDeck.WebAPI.Database;
+using DeutschDeck.WebAPI.Database.Repositories;
+using DeutschDeck.WebAPI.Domain;
 using DeutschDeck.WebAPI.Emails;
 using DeutschDeck.WebAPI.Graphql;
 using DeutschDeck.WebAPI.Utilities;
@@ -36,6 +38,10 @@ builder.Services.AddSingleton<SignupTemplateProvider>();
 builder.Services.AddSingleton(new EmailDeliveryAdapterConfiguration(EMAIL_DELIVERY_TOKEN, EMAIL_DELIVERY_ENDPOINT, EMAIL_DELIVERY_SENDER));
 builder.Services.AddSingleton<IEmailDeliveryAdapter, MailerSendAdapter>();
 
+builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<DDQueries>();
+builder.Services.AddSingleton<DDMutations>();
 builder.Services.AddSingleton<DDSchema>();
 builder.Services.AddDbContext<DDContext>(options => options.UseNpgsql(POSTGRES_CONNECTION), ServiceLifetime.Singleton);
 
@@ -54,7 +60,6 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors(OriginsPolicy);
-app.UseHttpsRedirection();
 
 app.UseGraphQL("/graphql");
 app.UseGraphQLAltair();
