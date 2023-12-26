@@ -1,6 +1,7 @@
-using DeutschDeck.WebAPI;
 using DeutschDeck.WebAPI.Database;
 using DeutschDeck.WebAPI.Emails;
+using DeutschDeck.WebAPI.Graphql;
+using DeutschDeck.WebAPI.Utilities;
 using dotenv.net;
 using GraphQL;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,8 @@ builder.Services.AddGraphQL((builder) =>
     builder.AddErrorInfoProvider((opts, serviceProvider) => opts.ExposeExceptionDetails = true);
     builder.AddSchema<DDSchema>();
 });
+
+builder.Services.AddSingleton<PasswordGenerationUtility>();
 
 builder.Services.AddSingleton(new SignupTemplateProviderConfiguration(EMAIL_DELIVERY_SIGNIN_TEMPLATE, EMAIL_DELIVERY_SIGNIN_SUBJECT));
 builder.Services.AddSingleton<SignupTemplateProvider>();
