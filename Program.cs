@@ -4,24 +4,23 @@ using DeutschDeck.WebAPI.Domain;
 using DeutschDeck.WebAPI.Emails;
 using DeutschDeck.WebAPI.Graphql;
 using DeutschDeck.WebAPI.Utilities;
-using dotenv.net;
 using GraphQL;
 using Microsoft.EntityFrameworkCore;
 
-var envVars = DotEnv.Read();
-var WEB_APP_ENDPOINT = envVars["WEB_APP_ENDPOINT"];
+var WEB_APP_ENDPOINT = EnvironmentFallbackProvider.GetEnvironmentVariable("WEB_APP_ENDPOINT");
 
-var POSTGRES_HOST = envVars["POSTGRES_HOST"];
-var POSTGRES_DB = envVars["POSTGRES_DB"];
-var POSTGRES_USER = envVars["POSTGRES_USER"];
-var POSTGRES_PASSWORD = envVars["POSTGRES_PASSWORD"];
+var RUNNING_IN_CONTAINER = EnvironmentFallbackProvider.GetEnvironmentVariable("RUNNING_IN_CONTAINER");
+var POSTGRES_HOST = bool.Parse(RUNNING_IN_CONTAINER) ? EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_HOST") : EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_LOCALHOST");
+var POSTGRES_DB = EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_DB");
+var POSTGRES_USER = EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_USER");
+var POSTGRES_PASSWORD = EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_PASSWORD");
 var POSTGRES_CONNECTION = string.Format("Host={0};Database={1};Username={2};Password={3}", POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD);
 
-var EMAIL_DELIVERY_TOKEN = envVars["EMAIL_DELIVERY_TOKEN"];
-var EMAIL_DELIVERY_ENDPOINT = envVars["EMAIL_DELIVERY_ENDPOINT"];
-var EMAIL_DELIVERY_SENDER = envVars["EMAIL_DELIVERY_SENDER"];
-var EMAIL_DELIVERY_SIGNIN_TEMPLATE = envVars["EMAIL_DELIVERY_SIGNIN_TEMPLATE"];
-var EMAIL_DELIVERY_SIGNIN_SUBJECT = envVars["EMAIL_DELIVERY_SIGNIN_SUBJECT"];
+var EMAIL_DELIVERY_TOKEN = EnvironmentFallbackProvider.GetEnvironmentVariable("EMAIL_DELIVERY_TOKEN");
+var EMAIL_DELIVERY_ENDPOINT = EnvironmentFallbackProvider.GetEnvironmentVariable("EMAIL_DELIVERY_ENDPOINT");
+var EMAIL_DELIVERY_SENDER = EnvironmentFallbackProvider.GetEnvironmentVariable("EMAIL_DELIVERY_SENDER");
+var EMAIL_DELIVERY_SIGNIN_TEMPLATE = EnvironmentFallbackProvider.GetEnvironmentVariable("EMAIL_DELIVERY_SIGNIN_TEMPLATE");
+var EMAIL_DELIVERY_SIGNIN_SUBJECT = EnvironmentFallbackProvider.GetEnvironmentVariable("EMAIL_DELIVERY_SIGNIN_SUBJECT");
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGraphQL((builder) =>
@@ -38,12 +37,13 @@ builder.Services.AddSingleton<SignupTemplateProvider>();
 builder.Services.AddSingleton(new EmailDeliveryAdapterConfiguration(EMAIL_DELIVERY_TOKEN, EMAIL_DELIVERY_ENDPOINT, EMAIL_DELIVERY_SENDER));
 builder.Services.AddSingleton<IEmailDeliveryAdapter, MailerSendAdapter>();
 
+builder.Services.AddDbContext<DDContext>(options => options.UseNpgsql(POSTGRES_CONNECTION), ServiceLifetime.Singleton);
+
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<DDQueries>();
 builder.Services.AddSingleton<DDMutations>();
 builder.Services.AddSingleton<DDSchema>();
-builder.Services.AddDbContext<DDContext>(options => options.UseNpgsql(POSTGRES_CONNECTION), ServiceLifetime.Singleton);
 
 var OriginsPolicy = "_AllowLocalOrigin";
 builder.Services.AddCors(options =>
