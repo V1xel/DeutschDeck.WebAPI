@@ -4,6 +4,13 @@
       "commandName": "Executable",
       "executablePath": "docker-compose",
       "commandLineArgs": "up"
+    },
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "ui/altair",
+      "applicationUrl": "http://localhost"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json"
