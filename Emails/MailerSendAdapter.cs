@@ -17,7 +17,7 @@ namespace DeutschDeck.WebAPI.Emails
 
         public async Task SendSignupResponse(string recipient, string password)
         {
-            var request = new RestRequest();
+            var request = new RestRequest("/email");
             request.AddJsonBody(new MailerSendRequestBody(
                 new MailerSendRerson(configuration.sender), 
                 [new MailerSendRerson(recipient)],
