@@ -9,8 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 var WEB_APP_ENDPOINT = EnvironmentFallbackProvider.GetEnvironmentVariable("WEB_APP_ENDPOINT");
 
-var RUNNING_IN_CONTAINER = EnvironmentFallbackProvider.GetEnvironmentVariable("RUNNING_IN_CONTAINER");
-var POSTGRES_HOST = bool.Parse(RUNNING_IN_CONTAINER) ? EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_HOST") : EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_LOCALHOST");
+var APP_IN_PRODUCTION = EnvironmentFallbackProvider.GetEnvironmentVariable("APP_IN_PRODUCTION");
+var APP_RUNNING_IN_CONTAINER = EnvironmentFallbackProvider.GetEnvironmentVariable("APP_RUNNING_IN_CONTAINER");
+
+var POSTGRES_HOST = bool.Parse(APP_RUNNING_IN_CONTAINER) ? EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_HOST") : EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_LOCALHOST");
 var POSTGRES_DB = EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_DB");
 var POSTGRES_USER = EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_USER");
 var POSTGRES_PASSWORD = EnvironmentFallbackProvider.GetEnvironmentVariable("POSTGRES_PASSWORD");
@@ -35,7 +37,16 @@ builder.Services.AddSingleton<PasswordGenerationUtility>();
 builder.Services.AddSingleton(new SignupTemplateProviderConfiguration(EMAIL_DELIVERY_SIGNIN_TEMPLATE, EMAIL_DELIVERY_SIGNIN_SUBJECT));
 builder.Services.AddSingleton<SignupTemplateProvider>();
 builder.Services.AddSingleton(new EmailDeliveryAdapterConfiguration(EMAIL_DELIVERY_TOKEN, EMAIL_DELIVERY_ENDPOINT, EMAIL_DELIVERY_SENDER));
-builder.Services.AddSingleton<IEmailDeliveryAdapter, MailerSendAdapter>();
+
+
+if (bool.Parse(APP_IN_PRODUCTION)) 
+{
+    builder.Services.AddSingleton<IEmailDeliveryAdapter, MailerSendAdapter>();
+}
+else
+{
+    builder.Services.AddSingleton<IEmailDeliveryAdapter, MockedEmailDelivery>();
+}
 
 builder.Services.AddDbContext<DDContext>(options => options.UseNpgsql(POSTGRES_CONNECTION), ServiceLifetime.Singleton);
 
