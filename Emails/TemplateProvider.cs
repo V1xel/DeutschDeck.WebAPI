@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DeutschDeck.WebAPI.Utilities;
 
 namespace DeutschDeck.WebAPI.Emails
 {
@@ -8,7 +8,7 @@ namespace DeutschDeck.WebAPI.Emails
         public string GetFilledTemplate(string password) 
         {
             var template = File.ReadAllText(configuration.templatePath);
-            return string.Format(template, password);
+            return StringFormatter.Format(template, password);
         }
 
         public string Subject { get { return configuration.subject; } }
